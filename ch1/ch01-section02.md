@@ -126,10 +126,15 @@ Lets consider $P(k+1)$: $Fib(k+1) = (\phi ^ {k+1} - \psi ^ {k+1})/\sqrt{5}$
 We know that
 
 $$Fib(k+1) $$
+
 $$= Fib(k) + Fib(k-1)$$
-$$= (\phi ^ {k} - \psi ^ {k}) / \sqrt{5} + (\phi ^ {k-1} - \psi ^ {k-1}) / \sqrt{5} \\$$
-$$= ((\phi + 1) \phi ^ {k-1} - (\psi + 1) \psi ^ {k-1}) / \sqrt{5}\\$$
-$$= ((\phi ^ 2) \phi ^ {k-1} - (\psi ^ 2) \psi ^ {k-1}) / \sqrt{5} \;\;\;\;(Note: 1)\\$$
+
+$$= (\phi ^ {k} - \psi ^ {k}) / \sqrt{5} + (\phi ^ {k-1} - \psi ^ {k-1}) / \sqrt{5}$$
+
+$$= ((\phi + 1) \phi ^ {k-1} - (\psi + 1) \psi ^ {k-1}) / \sqrt{5}$$
+
+$$= ((\phi ^ 2) \phi ^ {k-1} - (\psi ^ 2) \psi ^ {k-1}) / \sqrt{5} \;\;\;\;(Note: 1)$$
+
 $$= (\phi ^ {k+1} - \psi ^ {k+1}) / \sqrt{5}$$
 
 $(Note: 1)$ The definition of $\phi$ and $\psi$ is that they are solutions to the equation $x^2 = x+1$.
