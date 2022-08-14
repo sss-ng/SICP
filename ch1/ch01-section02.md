@@ -133,7 +133,7 @@ $$= (\phi ^ {k} - \psi ^ {k}) / \sqrt{5} + (\phi ^ {k-1} - \psi ^ {k-1}) / \sqrt
 
 $$= ((\phi + 1) \phi ^ {k-1} - (\psi + 1) \psi ^ {k-1}) / \sqrt{5}$$
 
-$$= ((\phi ^ 2) \phi ^ {k-1} - (\psi ^ 2) \psi ^ {k-1}) / \sqrt{5} \;\;\;\;(Note: 1)$$
+$$= ((\phi ^ 2) \phi ^ {k-1} - (\psi ^ 2) \psi ^ {k-1}) / \sqrt{5}    \text{ (See Note: 1)}$$
 
 $$= (\phi ^ {k+1} - \psi ^ {k+1}) / \sqrt{5}$$
 
