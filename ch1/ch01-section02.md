@@ -150,3 +150,371 @@ Not going to draw it in ascii, but did on my whiteboard. Basically, its a very s
 a) `(sine 12.15)` has `p` evaluated 5 times since you must divide 12.15 by 3, 5 times to get a number smaller than 0.1.
 
 b) Growth in space and time is $O(\log_{3}n)$ since we have a linear recursive process, which uses up stack space since it isnt tail recursive.
+
+### Exercise 1.2.16
+
+```scheme
+#lang sicp
+
+(define (even? n)
+  (= (remainder n 2) 0))
+
+(define (square n) (* n n))
+
+(define (fast-expt-iter b n a)
+  (cond ((= n 0) a)
+        ((even? n) (fast-expt-iter (square b) (/ n 2) a))
+        (else (fast-expt-iter b (- n 1) (* a b)))))
+
+;; (fast-expt-iter 2 10 1)
+;; 1048
+```
+
+### Exercise 1.2.17
+
+```scheme
+#lang sicp
+
+(define (even? n)
+  (= (remainder n 2) 0))
+
+(define (double n) (+ n n))
+
+(define (halve n) (/ n 2))
+
+(define (fast-mult a b)
+  (cond ((= a 0) 0)
+        ((even? a) (double (fast-mult (halve a) b)))
+        (else (+ b (fast-mult (- a 1) b)))))
+
+
+;; (fast-mult 10 5)
+;; (fast-mult 4 8)
+;; 50
+;; 32
+```
+
+### Exercise 1.2.18
+
+```scheme
+(define (even? n)
+  (= (remainder n 2) 0))
+
+(define (double n) (+ n n))
+
+(define (halve n) (/ n 2))
+
+(define (fast-mult-iter a b s)
+  (cond ((= a 0) s)
+        ((even? a) (fast-mult-iter (halve a) (double b) s))
+        (else (fast-mult-iter (- a 1) b (+ s b)))))
+;; (fast-mult-iter 10 5)
+;; (fast-mult-iter 4 8)
+;; 50
+;; 32
+```
+
+### Exercise 1.2.19
+
+After a ton of algebra that Im really not interested in writing out, you get that:
+$q' = 2pq + q^2$ and $p' = p^2 + q^2$.
+
+```scheme
+#lang sicp
+
+(define (even? n)
+  (= (remainder n 2) 0))
+
+(define (square n) (* n n))
+
+(define (fib n)
+  (fib-iter 1 0 0 1 n))
+
+(define (fib-iter a b p q count)
+  (cond ((= count 0) b)
+    ((even? count)
+    (fib-iter a
+              b
+              (+ (square p) (square q)) ; compute p′
+              (+ (* 2 p q) (square q)); compute q′
+              (/ count 2)))
+    (else (fib-iter (+ (* b q) (* a q) (* a p))
+                    (+ (* b p) (* a q))
+                    p
+                    q
+                    (- count 1)))))
+
+;; (fib 5)
+;; (fib 6)
+;; (fib 7)
+;; (fib 8)
+
+;; 5
+;; 8
+;; 13
+;; 21
+
+```
+
+### Exercise 1.2.20
+
+The idea behind normal order evaluation is that you expand everything and then evaluate later.
+
+Applicative order evaluation will proceed like so:
+
+```scheme
+(gcd 206 40)
+(gcd 206 (remainder 206 40))
+(gcd 40 (remainder 40 6))
+(gcd 6 (remainder 6 4))
+(gcd 4 (remainder 4 2))
+(gcd 2 0)
+;; 2
+```
+
+So, `remainder` is called 4 times.
+
+There's probably a typo somewhere in the below but I think the count is correct:
+
+```scheme
+
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
+;; (gcd 206 40)
+
+
+(if (= 40 0)
+    206
+    (gcd 40 (remainder 206 40)))
+
+
+(if (= (remainder 206 40) 0) ;; 1
+    40
+    (gcd (remainder 206 40) (remainder 40 (remainder 206 40))))
+
+
+(if (= (remainder 40 (remainder 206 40)) 0) ;; 2
+    (remainder 206 40)
+    (gcd
+     (remainder 40 (remainder 206 40))
+     (remainder (remainder 206 40)
+                (remainder 40
+                           (remainder 206 40)))))
+
+(if (= (remainder (remainder 206 40)
+                (remainder 40
+                           (remainder 206 40)))
+       0) ;; 4
+    (remainder 40 (remainder 206 40))
+    (gcd
+     (remainder (remainder 206 40)
+                (remainder 40
+                           (remainder 206 40)))
+     (remainder
+      (remainder 40 (remainder 206 40))
+      (remainder (remainder 206 40)
+                 (remainder 40
+                           (remainder 206 40))))))
+
+(if (= (remainder
+      (remainder 40 (remainder 206 40))
+      (remainder (remainder 206 40)
+                 (remainder 40
+                           (remainder 206 40))))
+       0) ;; 7
+    (remainder (remainder 206 40)
+                (remainder 40
+                           (remainder 206 40))) ;; 4
+    (gcd
+     (remainder
+      (remainder 40 (remainder 206 40))
+      (remainder (remainder 206 40)
+                 (remainder 40
+                           (remainder 206 40))))
+     (remainder
+      (remainder (remainder 206 40)
+                (remainder 40
+                           (remainder 206 40)))
+      (remainder
+       (remainder 40 (remainder 206 40))
+       (remainder (remainder 206 40)
+                  (remainder 40
+                             (remainder 206 40)))))))
+```
+
+So the count is $1+2+4+7+4=18$.
+
+### Exercise 1.2.21
+
+```scheme
+#lang sicp
+
+(define (smallest-divisor n) (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+
+(define (divides? a b) (= (remainder b a) 0))
+
+(define (square n) (* n n))
+
+(smallest-divisor 199)
+(smallest-divisor 1999)
+(smallest-divisor 19999)
+;; 199
+;; 1999
+;; 7
+```
+
+### Exercise 1.2.22
+
+```scheme
+
+(define (smallest-divisor n) (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+
+(define (divides? a b) (= (remainder b a) 0))
+
+(define (square n) (* n n))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (report-prime (- (runtime) start-time))))
+
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+
+(define (search-for-primes start end)
+  (cond ((even? start)
+         (search-for-primes (+ 1 start) end))
+        ((<= start end)
+         (begin
+           (timed-prime-test start)
+           (search-for-primes (+ 2 start) end)))))
+
+(search-for-primes 1000 1000000)
+```
+
+The times for each run dont really register on modern hardware...
+
+### Exercise 1.2.23
+
+```scheme
+#lang sicp
+
+(define (smallest-divisor n) (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (next test-divisor)))))
+
+(define (divides? a b) (= (remainder b a) 0))
+
+(define (square n) (* n n))
+
+(define (next n)
+  (if (= n 2) 3
+      (+ n 2)))
+
+```
+
+Not sure why it would be halved. Maybe there is less numerical overhead when calling `divides?` on even numbers, or maybe the extra `if` check in `next`.
+
+### Exercise 1.2.24
+
+```scheme
+#lang sicp
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (square (expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder
+          (* base (expmod base (- exp 1) m))
+          m))))
+
+(define (smallest-divisor n) (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (next 1)))))
+
+(define (next n)
+  (if (= n 2) 3
+      (+ n 2)))
+
+(define (divides? a b) (= (remainder b a) 0))
+
+(define (square n) (* n n))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+
+(define (start-prime-test n start-time)
+  (if (fast-prime? n 100)
+      (report-prime (- (runtime) start-time))))
+
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+
+(define (fermat-test n)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (try-it (+ 1 (random (- n 1)))))
+
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((fermat-test n) (fast-prime? n (- times 1)))
+        (else false)))
+
+```
+
+### Exercise 1.2.25
+
+The numbers will likely get huge. In theory thats ok but most likely the machine wont be able to handle them as efficiciently.
+
+### Exercise 1.2.26
+
+Louis Reasoner's method basically forces normal order evaluation onto the process. `(square n)` only evaluates `n` once, while their squaring process evaluates it twice. So now the process is tree recursive, but because its also logarithmic, they cancel each other out and become just a linear `O(n)` process.
+
+### Exercise 1.2.27
+
+```scheme
+(define (carmichael n a)
+  (cond ((= a n) #t)
+        ((or (> a n) (not (= (expmod a n n) a))) #f)
+        (else (carmichael n (+ a 1)))))
+
+(carmichael 6601 1)
+;; #t
+```
+
+### Exercise 1.2.28
