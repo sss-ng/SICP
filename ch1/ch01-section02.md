@@ -518,3 +518,32 @@ Louis Reasoner's method basically forces normal order evaluation onto the proces
 ```
 
 ### Exercise 1.2.28
+
+```scheme
+#lang sicp
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (square-special (expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder
+          (* base (expmod base (- exp 1) m))
+          m))))
+
+(define (square-special n m)
+  (cond ((and (= (remainder (square n) m) 1)
+              (not (= n (- m 1)))
+              (not (= n 1)))
+         0)
+        (else (square n))))
+
+(define (miller-rabin-helper a n)
+  (cond ((= a 0) #t)
+        ((= (expmod a (- n 1) n) 1) (miller-rabin (- a 1) n))
+        (else #f)))
+
+(define (miller-rabin n)
+  (miller-rabin-helper (- n 1) n))
+```
